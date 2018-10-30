@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href ="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel ="stylesheet" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+<link rel ="stylesheet" href ="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+<h1>Home Alarm    <i class ="material-icons md-48" >alarm </i></h1>
+<p>
+   <i class ="material-icons md-48" >wb_sunny </i>
+  <input type ="text" id ="humidity" readonly>
+ ||
+  <i class ="material-icons  md-48">ac_unit </i>
+  <input type ="text" id ="temp" readonly>
+ ||
+  <i class ="material-icons  md-48" >camera_rear</i>
+   <input type = "text" id ="distance" readonly >
+ ||
+    <i class ="material-icons md-48"> highlight </i>
+    <input type ="text" id ="light" readonly>
+||
+   <button  id ="trig" >Turn On the Alarm </button>
+  ||
+   <button  id ="off" >Turn Off the Alarm </button>
+
+</p>
+<video id ="player" controls></video>
+<script src ="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script> <!-- include socket.io client side script -->
+<script src ="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script> <!-- include socket.io client side script -->
+
+<script src ="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script>
+navigator.permissions.query({name:'camera'}).then(function(result){
+if(result.state == 'granted'){
+
+}else if (result.state == 'prompt') {
+}
+else if(result.state == 'denied'){
+}
+result.onchange = function(){};
+
+});
+
+var player = document.getElementById('player');
+var handleSuccess = function(stream){
+player.srcObject = stream;
+} ;
+navigator.mediaDevices.getUserMedia({audio:true, video:true}).then(handleSuccess);
+
+
+var socket = io.connect('http://192.168.0.11:2500'); //load socket.io-client and connect to the host that serves the page
+window.addEventListener("load", function(){ //when page loads
+ /* alarm.addEventListener("change", function() { //add event listener for when checkbox changes
+    socket.emit("light", ""); //send button status to server (as 1 or 0)
+  });*/
+});
+socket.on('turnonalarm', function (data) { //get button status from client
+    if(data){
+  document.getElementById("humidity").value = data.humidity + '  %'; //change checkbox according to push button on Raspberry Pi
+  document.getElementById("temp").value = data.temperature + ' F'; //change checkbox according to push button on Raspberry Pi
+  document.getElementById("distance").value = data.distance + ' cm'; //change checkbox according to push button on Raspberry Pi
+   }
+//  socket.emit("turnoalarm",'yes'); //send push button status to back to server
+});
+document.getElementById("trig").addEventListener('click',function(){
+socket.emit("turnonalarm", 'yes');
+});
+
+socket.on("light",function(data){
+
+document.getElementById("light").value = data;
+
+});
+
+document.getElementById("off").addEventListener('click', function(){
+socket.emit('turnofalarm', 'yes');
+});
+</script>
+</html>
+</body>
+</html>
+

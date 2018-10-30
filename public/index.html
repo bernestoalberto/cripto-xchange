@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html lang ="en">
+<head>
+    <meta charset = "utf-8">
+    <meta http-equi v= "X-UA-Compatible" content ="IE=edge">
+    <meta name = "viewport" content =" width = device-width, initial-scale=1">
+    <title>Stock Market</title>
+    <link href="if_notification-icon-tm_520567.png" rel="icon">
+    <link href ="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel ="stylesheet" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link rel ="stylesheet" href ="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <style type ="text/css">
+        #stream {
+            height: 99%;
+            margin: 0px auto;
+            display: block;
+            margin-top: 20px;
+        }
+    </style>
+
+</head>
+<body>
+<h1>Home Stock Market <i class ="material-icons md-48" >BTC </i></h1>
+<p>
+    <i class ="material-icons md-48" >trending_up</i>
+    15min <input type ="text" id ="usd" readonly>
+    ||
+    last<i class ="material-icons  md-48">today</i>
+    <input type ="text" id ="last" readonly>
+    ||
+    buy<i class ="material-icons  md-48" >trending_flat</i>
+    <input type = "text" id ="buy" readonly >
+    ||
+    sell<i class ="material-icons md-48">swap_vert</i>
+    <input type ="text" id ="sell" readonly>
+    ||
+    symbol<i class ="material-icons md-48"> timeline</i>
+    <input type ="text" id ="symbol" readonly>
+<hr>
+toBTC<i class ="material-icons md-48" >trending_up</i>
+<input type ="text" id ="tobtc" readonly>
+||    <i class ="material-icons md-48"> payment</i>
+BTC<input type ="text" id ="btc" readonly>
+<!--- <button  id ="trig" >Turn On the Alarm </button>
+||
+ <button  id ="off" >Turn Off the Alarm <i class="material-icons">alarm_off</i></button>
+ <button  id ="rgb_led" >Turn On the LED <i class="material-icons">toggle_on</i></button>
+ <button  id ="buzzer_button" >Pound the Buzer <i class="material-icons">vibration</i> </button> -->
+
+</p>
+<div class = "container">
+    <div class ="row">
+    </div>
+</div>
+<!-- jQuery -->
+<script src ="http://code.jquery.com/jquery.js"></script>
+<script src ="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script> <!-- include socket.io client side script -->
+<script src ="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+<script>
+    /* navigator.permissions.query({name:'camera'}).then(function(result){
+     if(result.state == 'granted'){
+
+    }else if (result.state == 'prompt') {
+    }
+    else if(result.state == 'denied'){
+    }
+    result.onchange = function(){};
+
+    });
+
+    var player = document.getElementById('player');
+    var handleSuccess = function(stream){
+    player.srcObject = stream;
+    } ;
+    navigator.mediaDevices.getUserMedia({audio:true, video:true}).then(handleSuccess);
+    */
+
+    //var socket = io.connect('173.171.247.232:3500');
+    //var socket = io.connect('192.168.86..27:3500');
+    var socket = io.connect(document.location.host);
+    console.log(document.location.host);
+    window.addEventListener("load", function(){ //when page loads
+        /* alarm.addEventListener("change", function() { //add event listener for when checkbox changes
+           socket.emit("light", ""); //send button status to server (as 1 or 0)
+         });*/
+    });
+    socket.on('market', function (data) { //get button status from client
+        if(data){
+            document.getElementById("usd").style.color = (document.getElementById("usd").value  > data.currency['USD']['15m']) ? '#343a40': '#dc3545';
+            document.getElementById("usd").value = data.currency['USD']['15m']; //change checkbox according to push button on Raspberry Pi
+            setTimeout(()=>{
+                document.getElementById("usd").style.color ='#343a40';
+            },3000);//change checkbox according to push button on Raspberry Pi
+
+            document.getElementById("last").style.color = (document.getElementById("last").value  > data.currency['USD']['15m']) ? '#343a40': '#dc3545';
+            document.getElementById("last").value = data.currency['USD'].last; //change checkbox according to push button on Raspberry Pi
+            setTimeout(()=>{
+                document.getElementById("last").style.color ='#343a40';
+            },3000);
+
+
+            document.getElementById("buy").style.color = (document.getElementById("buy").value  > data.currency['USD']['15m']) ? '#343a40': '#dc3545';
+            document.getElementById("buy").value = data.currency['USD'].buy; //change checkbox according to push button on Raspberry Pi
+            setTimeout(()=>{
+                document.getElementById("buy").style.color ='#343a40';
+            },3000);
+
+            document.getElementById("sell").style.color = (document.getElementById("sell").value  > data.currency['USD']['15m']) ? '#343a40': '#dc3545';
+            document.getElementById("sell").value = data.currency['USD'].sell;
+            setTimeout(()=>{
+                document.getElementById("sell").style.color ='#343a40';
+            },3000);
+
+            document.getElementById("symbol").value = data.currency['USD'].symbol ;
+
+
+            document.getElementById("tobtc").style.color = (document.getElementById("tobtc").value  > data.currency['USD']['15m']) ? '#343a40': '#dc3545';
+            document.getElementById("tobtc").value = data.tobtc ;
+            setTimeout(()=>{
+                document.getElementById("tobtc").style.color ='#343a40';
+            },3000);
+
+            document.getElementById("btc").style.color = (document.getElementById("btc").value  > data.currency['USD']['15m']) ? '#343a40': '#dc3545';
+            document.getElementById("btc").value = data.btc ;
+            setTimeout(()=>{
+                document.getElementById("btc").style.color ='#343a40';
+            },3000);
+
+
+        }
+//  socket.emit("turnoalarm",'yes'); //send push button status to back to server
+    });
+    /*document.getElementById("trig").addEventListener('click',function(){
+      console.log('Attemp to turn on the alarm');
+    socket.emit("turnonalarm", 'yes');
+    });*/
+    /*
+    socket.on("light",function(data){
+    document.getElementById("light").value = data;
+    });
+
+    socket.on('liveStream', function(url){
+    $('#stream').attr('src',url);
+    });
+
+
+    document.getElementById("off").addEventListener('click', function(){
+    socket.emit('turnofalarm', 'yes');
+    });
+    document.getElementById("rgb_led").addEventListener('click', function(){
+    socket.emit('rgbLed','yes');
+    });
+
+    document.getElementById("buzzer_button").addEventListener('click', function(){
+    socket.emit('buzzer','yes');
+    });
+
+    document.getElementById("engage").addEventListener('click', function(){
+
+    socket.emit('turnonalarm', 'yes');
+
+    });
+
+    var constraints = {
+      video: true
+    };
+
+    var video = document.querySelector('video');
+
+    function handleSuccess(stream) {
+      video.srcObject = stream;
+    }
+
+    function handleError(error) {
+      console.error('getUserMedia error: ', error);
+    }
+
+    navigator.mediaDevices.getUserMedia(constraints).
+      then(handleSuccess).catch(handleError);
+    */
+</script>
+</body>
+</html>
+

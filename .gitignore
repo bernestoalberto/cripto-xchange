@@ -77,10 +77,5 @@ typings/
 .gitignore
 .idea/
 .ignore
-Readme.md
-config/
-helpers/
-index.js
-package-lock.json
 package.json
-public/
+
